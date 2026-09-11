@@ -17,24 +17,35 @@ PASSWORD = 2
 
 # ---------------- helper: load whole list ----------------
 def load_records():
+    records = []
     try:
         with open(FILENAME, "rb") as f:
-            return pickle.load(f)
+            while True:
+                try:
+                    records.append(pickle.load(f))
+                except EOFError:
+                    break
     except FileNotFoundError:
-        return []
-    except EOFError:
-        return []
+        pass
+    return records
 
 
-# ---------------- helper: save whole list ----------------
+# ---------------- helper: save whole list (full rewrite) ----------------
 def save_records(records):
     with open(FILENAME, "wb") as f:
-        pickle.dump(records, f)
+        for rec in records:
+            pickle.dump(rec, f)
+
+
+# ---------------- helper: append a single record ----------------
+def append_record(rec):
+    with open(FILENAME, "ab") as f:
+        pickle.dump(rec, f)
 
 
 # ---------------- 1. CREATE ----------------
 def create():
-    records = []   # write binary - overwrites/erases old records
+    open(FILENAME, "wb").close()   # truncate - erases old records
 
     while True:
         nme = input("Enter name: ")
@@ -43,20 +54,16 @@ def create():
 
         rec = [nme, eml, pwd]
 
-        records.append(rec)
+        append_record(rec)
         print("Record added successfully.\n")
 
         more = input("Add more entries? (y/n): ")
         if more.lower() != "y":
             break
-
-    save_records(records)
 
 
 # ---------------- 1b. ADD ----------------
 def add():
-    records = load_records()
-
     while True:
         nme = input("Enter name: ")
         eml = input("Enter email: ")
@@ -64,14 +71,12 @@ def add():
 
         rec = [nme, eml, pwd]
 
-        records.append(rec)
+        append_record(rec)
         print("Record added successfully.\n")
 
         more = input("Add more entries? (y/n): ")
         if more.lower() != "y":
             break
-
-    save_records(records)
 
 
 # ---------------- 2. DISPLAY ----------------
