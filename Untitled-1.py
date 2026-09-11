@@ -13,7 +13,7 @@ FILENAME = "passwords.dat"
 
 # ---------------- 1. CREATE ----------------
 def create():
-    with open(FILENAME, "ab") as f:   # append binary - so old records are not erased
+    with open(FILENAME, "wb") as f:   # write binary - overwrites/erases old records
 
         while True:
             nme = input("Enter name: ")
